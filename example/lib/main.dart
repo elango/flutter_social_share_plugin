@@ -8,10 +8,8 @@ import 'package:image_picker/image_picker.dart';
 ///sharing platform
 enum Share {
   facebook,
-  messenger,
   twitter,
   whatsapp,
-  whatsapp_personal,
   whatsapp_business,
   share_system,
   share_instagram,
@@ -58,16 +56,8 @@ class _MyAppState extends State<MyApp> {
                 child: const Text('share to WhatsApp Business'),
               ),
               ElevatedButton(
-                onPressed: () => onButtonTap(Share.whatsapp_personal),
-                child: const Text('share to WhatsApp Personal'),
-              ),
-              ElevatedButton(
                 onPressed: () => onButtonTap(Share.facebook),
                 child: const Text('share to  FaceBook'),
-              ),
-              ElevatedButton(
-                onPressed: () => onButtonTap(Share.messenger),
-                child: const Text('share to  Messenger'),
               ),
               ElevatedButton(
                 onPressed: () => onButtonTap(Share.share_instagram),
@@ -129,9 +119,6 @@ class _MyAppState extends State<MyApp> {
       case Share.facebook:
         response = await flutterShareMe.shareToFacebook(url: url, msg: msg);
         break;
-      case Share.messenger:
-        response = await flutterShareMe.shareToMessenger(url: url, msg: msg);
-        break;
       case Share.twitter:
         response = await flutterShareMe.shareToTwitter(url: url, msg: msg);
         break;
@@ -154,10 +141,6 @@ class _MyAppState extends State<MyApp> {
         break;
       case Share.share_system:
         response = await flutterShareMe.shareToSystem(msg: msg);
-        break;
-      case Share.whatsapp_personal:
-        response = await flutterShareMe.shareWhatsAppPersonalMessage(
-            message: msg, phoneNumber: 'phone-number-with-country-code');
         break;
       case Share.share_telegram:
         response = await flutterShareMe.shareToTelegram(msg: msg);

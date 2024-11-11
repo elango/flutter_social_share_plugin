@@ -5,11 +5,11 @@
 
 Flutter Plugin for sharing contents to social media.
 
-You can use it share to Facebook , Instagram , WhatsApp(WhatsAppBusiness) , Twitter, telegram And System Share UI. 
+You can use it share to Facebook , Instagram , WhatsApp(WhatsAppBusiness) , Twitter, Telegram,Sms,Mails And System Share UI. 
 Support Url and Text.
 
 support:
- - Android & iOS :  Facebook,WhatsApp(WhatsAppBusiness),Twitter,Instagram,System Share
+ - Android & iOS :  Facebook,WhatsApp(WhatsAppBusiness),Twitter,Instagram,System Share,Sms,Mails
 
 **Note: This plugin is still under development, and some APIs might not be available yet.  
 Feedback and Pull Requests are most welcome!**
@@ -24,7 +24,7 @@ dependencies:
   flutter:
     sdk: flutter
   # add flutter_social_share_plugin
-  flutter_social_share_plugin: ^2.0.1
+  flutter_social_share_plugin: ^2.1.1
 ```
 ## Setup 
 
@@ -200,7 +200,6 @@ import 'package:flutter_social_share_plugin/flutter_social_share_plugin.dart';
 ### whatsapp
 #### shareToWhatsApp({String msg,String imagePath})  
 #### shareToWhatsApp4Biz({String msg,String imagePath})  (only android)
-#### shareWhatsAppPersonalMessage(String message ,String phoneNumber)
 
 ### telegram
 #### shareToTelegram({String msg})
@@ -227,14 +226,16 @@ These methods will return "success" if they successfully jump to the correspondi
 
 ## Example
 ```
-  Container(
+   Container(
           width: double.infinity,
           child: Column(
             children: <Widget>[
               const SizedBox(height: 30),
               ElevatedButton(onPressed: pickImage, child: Text('Pick Image')),
               ElevatedButton(onPressed: pickVideo, child: Text('Pick Video')),
-              ElevatedButton(onPressed: () => onButtonTap(Share.twitter), child: const Text('share to twitter')),
+              ElevatedButton(
+                  onPressed: () => onButtonTap(Share.twitter),
+                  child: const Text('share to twitter')),
               ElevatedButton(
                 onPressed: () => onButtonTap(Share.whatsapp),
                 child: const Text('share to WhatsApp'),
@@ -244,16 +245,8 @@ These methods will return "success" if they successfully jump to the correspondi
                 child: const Text('share to WhatsApp Business'),
               ),
               ElevatedButton(
-                onPressed: () => onButtonTap(Share.whatsapp_personal),
-                child: const Text('share to WhatsApp Personal'),
-              ),
-              ElevatedButton(
                 onPressed: () => onButtonTap(Share.facebook),
                 child: const Text('share to  FaceBook'),
-              ),
-              ElevatedButton(
-                onPressed: () => onButtonTap(Share.messenger),
-                child: const Text('share to  Messenger'),
               ),
               ElevatedButton(
                 onPressed: () => onButtonTap(Share.share_instagram),
