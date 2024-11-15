@@ -272,6 +272,12 @@ These methods will return "success" if they successfully jump to the correspondi
           ),
         ),
 ```
+## Contributor
 
+<a href="https://github.com/KhilanVitthani/flutter_social_share_plugin/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=KhilanVitthani/flutter_social_share_plugin" />
+</a>
+
+## 
 
 ### Checkout the full example [here](https://github.com/khilanvitthani/flutter_social_share_plugin/blob/main/example/lib/main.dart) 
