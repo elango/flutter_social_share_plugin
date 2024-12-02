@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/services.dart';
 
 import 'file_type.dart';
@@ -140,13 +142,16 @@ class FlutterSocialShare {
   }
 
   ///share to facebook
-  Future<String?> shareToFacebook(
-      {required String msg, String url = ''}) async {
+  Future<String?> shareToFacebook({
+    required String msg,
+    String imagePath = '',
+  }) async {
     final Map<String, dynamic> arguments = <String, dynamic>{};
     arguments.putIfAbsent('msg', () => msg);
-    arguments.putIfAbsent('url', () => url);
+    arguments.putIfAbsent('imagePath', () => imagePath);
     String? result;
     try {
+      if (Platform.isIOS) {}
       result = await _channel.invokeMethod<String?>(_methodFaceBook, arguments);
     } catch (e) {
       return e.toString();

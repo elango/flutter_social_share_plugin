@@ -8,19 +8,9 @@
 	<string>This app nedds photo acess to use image_picker</string>
 	<key>NSCameraUsageDescription</key>
 	<string>This app needs camera access to use image_picker</string>
-	<key>CFBundleURLTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>fb343254889799245</string>
-			</array>
-		</dict>
-	</array>
-	<key>FacebookAppID</key>
-	<string>343254889799245</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
+		<string>fb</string>
 		<string>tg</string>
 		<string>instagram</string>
 		<string>twitter</string>

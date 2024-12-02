@@ -1,3 +1,6 @@
+# 2.1.2
+- facebook share work without facebook app Id
+
 # 2.1.1
 - fix [#5-deprecated code](https://github.com/KhilanVitthani/flutter_social_share_plugin/issues/5)
 

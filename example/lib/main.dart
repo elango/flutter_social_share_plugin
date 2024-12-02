@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_social_share_plugin/file_type.dart';
 import 'package:flutter_social_share_plugin/flutter_social_share.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 ///sharing platform
 enum Share {
@@ -87,6 +88,10 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> pickImage() async {
+    PermissionStatus status = await Permission.photos.request();
+    if (!status.isGranted) {
+      await Permission.photos.request();
+    }
     final XFile? xFile = await picker.pickImage(source: ImageSource.gallery);
     print(xFile);
     if (xFile != null) {
@@ -117,7 +122,8 @@ class _MyAppState extends State<MyApp> {
     final FlutterSocialShare flutterShareMe = FlutterSocialShare();
     switch (share) {
       case Share.facebook:
-        response = await flutterShareMe.shareToFacebook(url: url, msg: msg);
+        response = await flutterShareMe.shareToFacebook(
+            imagePath: file!.path, msg: msg);
         break;
       case Share.twitter:
         response = await flutterShareMe.shareToTwitter(url: url, msg: msg);

@@ -1,6 +1,7 @@
 import Flutter
 import UIKit
 import FBSDKShareKit
+import FBSDKCoreKit
 import PhotosUI
 import MessageUI
 public class SwiftFlutterSocialSharePlugin: NSObject, FlutterPlugin, SharingDelegate,MFMessageComposeViewControllerDelegate,MFMailComposeViewControllerDelegate {
@@ -200,19 +201,56 @@ public class SwiftFlutterSocialSharePlugin: NSObject, FlutterPlugin, SharingDele
     // @ map conting meesage and url
     
     func sharefacebook(message:Dictionary<String,Any>, result: @escaping FlutterResult)  {
-        let viewController = UIApplication.shared.delegate?.window??.rootViewController
-        //let shareDialog = ShareDialog()
-        let shareContent = ShareLinkContent()
-        shareContent.contentURL = URL.init(string: message["url"] as! String)!
-        shareContent.quote = message["msg"] as? String
-        
-        let shareDialog = ShareDialog(viewController: viewController, content: shareContent, delegate: self)
-        shareDialog.mode = .automatic
-        shareDialog.show()
-        result("Sucess")
-        
+    if let imagePath = message["imagePath"] as? String, let image = UIImage(contentsOfFile: imagePath) {
+        // Image is available, proceed to share the photo and text
+        let photo1 = SharePhoto(image: image, isUserGenerated: true)
+
+        var photos: [SharePhoto] = []
+        photos.append(photo1)
+
+        let photoContent = SharePhotoContent()
+        photoContent.photos = photos
+
+        if let text = message["msg"] as? String, !text.isEmpty {
+            let linkContent = ShareLinkContent()
+            linkContent.quote = text // Custom text here
+
+            if let viewController = UIApplication.shared.delegate?.window??.rootViewController {
+                // Check if the Facebook app is installed
+                if UIApplication.shared.canOpenURL(URL(string: "fb://")!) {
+                    // Facebook is installed, show the share dialog
+                    ShareDialog.show(viewController: viewController, content: photoContent, delegate: self)
+                } else {
+                    // Facebook is not installed, show a fallback (e.g., web share)
+                    print("Facebook app is not installed. Proceed with a fallback.")
+                    result(FlutterError(code: "FacebookAppNotInstalled", message: "Facebook app is not installed", details: nil))
+                }
+            }
+        } else {
+            result(FlutterError(code: "No Content", message: "No content to share", details: nil))
+        }
+    } else {
+        if let text = message["msg"] as? String, !text.isEmpty {
+            let linkContent = ShareLinkContent()
+            linkContent.quote = text // Custom text here
+
+            if let viewController = UIApplication.shared.delegate?.window??.rootViewController {
+                // Check if the Facebook app is installed
+                if UIApplication.shared.canOpenURL(URL(string: "fb://")!) {
+                    // Facebook is installed, show the share dialog
+                    ShareDialog.show(viewController: viewController, content: linkContent, delegate: self)
+                } else {
+                    // Facebook is not installed, show a fallback (e.g., web share)
+                    print("Facebook app is not installed. Proceed with a fallback.")
+                    result(FlutterError(code: "FacebookAppNotInstalled", message: "Facebook app is not installed", details: nil))
+                }
+            }
+        } else {
+            // If no message and no image, handle the error
+            result(FlutterError(code: "No Content", message: "No content to share", details: nil))
+        }
     }
-    
+        }
     // share twitter params
     // @ message
     // @ url

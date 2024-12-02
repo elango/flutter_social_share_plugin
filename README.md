@@ -24,36 +24,11 @@ dependencies:
   flutter:
     sdk: flutter
   # add flutter_social_share_plugin
-  flutter_social_share_plugin: ^2.1.1
+  flutter_social_share_plugin: ^2.1.2
 ```
 ## Setup 
 
 #### Android
-
-Add "facebook app id" to the application tag of AndroidManifest.xml
-```
-    <application>
-       ...
-       //add this 
-        <meta-data
-            android:name="com.facebook.sdk.ApplicationId"
-            android:value="@string/facebook_app_id" />
-            
-        <provider
-            android:name="com.facebook.FacebookContentProvider"
-            android:authorities="com.facebook.app.FacebookContentProvider[facebook_app_id]"
-            android:exported="false" />
-    </application>
-```
-
-string.xml:
-```
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-<!-- Replace "343254889799245" with your Facebook App ID here. -->
-    <string name="facebook_app_id">343254889799245</string>
-</resources>
-```
 
 ### Setup Whatsapp
 
@@ -108,31 +83,13 @@ Make sure you add SMS in AndroidManifest.xml.
     
 ##### setup facebook
 
-make sure you add below deatils in your plist file.
-
-
-```
-<key>FacebookAppID</key>
-<string>fbid</string>
-<key>CFBundleURLTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>fb-your-fb-id</string>
-			</array>
-		</dict>
-	</array>
-
-```
-Note-: Make sure you add fb in  at start of your fb Id in CFBundleURLSchemes.
-
 Add below value in url scheme(Refer to example).
 
 
 ```<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>fbauth2</string>
+		<string>fb</string>
 		<string>fbapi</string>
 		<string>fbapi20130214</string>
 		<string>fbapi20130410</string>
@@ -189,10 +146,10 @@ import 'package:flutter_social_share_plugin/flutter_social_share_plugin.dart';
 ## Methods
 
 ### facebook
-#### shareToFacebook({String msg, String url})
+#### shareToFacebook({String msg, String imagePath})
 
 ### Instagram
-#### shareToInstagram({String url, Result result})   
+#### shareToInstagram({String filePath})   
 
 ### twitter
 #### shareToTwitter({String msg, String url})   

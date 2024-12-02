@@ -57,7 +57,7 @@ public class FlutterSocialSharePlugin implements MethodCallHandler, FlutterPlugi
   public void onMethodCall(MethodCall call, @NonNull Result result) {
     switch (call.method) {
       case "facebook_share":
-        shareToFacebook(call.argument("url"), call.argument("msg"), result);
+        shareToFacebook(call.argument("imagePath"), call.argument("msg"), result);
         break;
       case "twitter_share":
         shareToTwitter(call.argument("url"), call.argument("msg"), result);
@@ -111,35 +111,36 @@ public class FlutterSocialSharePlugin implements MethodCallHandler, FlutterPlugi
     }
   }
 
-  private void shareToFacebook(String url, String msg, Result result) {
-    ShareDialog shareDialog = new ShareDialog(activity);
+  private void shareToFacebook(String imagePath, String message, Result result) {
+    try {
+      Intent intent = new Intent(Intent.ACTION_SEND);
 
-    shareDialog.registerCallback(callbackManager, new FacebookCallback<Sharer.Result>() {
-      @Override
-      public void onSuccess(Sharer.Result shareResult) {
-        result.success("success");
+      // Set the type to handle both text and images
+      if (imagePath != null && !imagePath.isEmpty()) {
+        // If an image URL is provided, share the image
+        File file = new File(imagePath);
+        Uri fileUri = FileProvider.getUriForFile(activity, activity.getPackageName() + ".provider", file);
+        intent.setType("image/*");
+        intent.putExtra(Intent.EXTRA_STREAM, fileUri);
+      } else {
+        // If no image is provided, share the message as text
+        intent.setType("text/plain");
       }
 
-      @Override
-      public void onCancel() {
-        result.error("CANCELLED", "Facebook share was cancelled", null);
+      // Add the message if provided
+      if (message != null && !message.isEmpty()) {
+        intent.putExtra(Intent.EXTRA_TEXT, message);
       }
 
-      @Override
-      public void onError(FacebookException error) {
-        result.error("ERROR", "An error occurred: " + error.getMessage(), null);
-      }
-    });
+      // Set the package to Facebook
+      intent.setPackage("com.facebook.katana");
 
-    ShareLinkContent content = new ShareLinkContent.Builder()
-            .setContentUrl(Uri.parse(url))
-            .setQuote(msg)
-            .build();
-
-    if (ShareDialog.canShow(ShareLinkContent.class)) {
-      shareDialog.show(content);
-    } else {
-      result.error("UNAVAILABLE", "Facebook app is not installed or can't handle sharing", null);
+      activity.startActivity(intent);
+      result.success("success");
+    } catch (ActivityNotFoundException e) {
+      result.error("FACEBOOK_NOT_INSTALLED", "Facebook is not installed on this device", null);
+    } catch (Exception e) {
+      result.error("ERROR", e.toString(), null);
     }
   }
 
