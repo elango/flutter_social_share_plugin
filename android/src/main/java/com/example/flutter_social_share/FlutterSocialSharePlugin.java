@@ -151,12 +151,16 @@ public class FlutterSocialSharePlugin implements MethodCallHandler, FlutterPlugi
       intent.putExtra(Intent.EXTRA_TEXT, msg);
 
       if (!TextUtils.isEmpty(imagePath)) {
+        android.util.Log.d(TAG, "shareWhatsApp: " + imagePath);
         File file = new File(imagePath);
         Uri fileUri = FileProvider.getUriForFile(activity, activity.getPackageName() + ".provider", file);
-        intent.setType("*/*");
+        android.util.Log.d(TAG, "shareWhatsAppFileURl: " + fileUri);
+        intent.setType("image/*");
         intent.putExtra(Intent.EXTRA_STREAM, fileUri);
+        intent.putExtra(Intent.EXTRA_TEXT, msg);
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
       } else {
+        android.util.Log.d(TAG, "shareWhatsAppText: " + imagePath);
         intent.setType("text/plain");
       }
       activity.startActivity(intent);

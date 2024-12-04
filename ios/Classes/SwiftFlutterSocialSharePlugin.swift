@@ -94,73 +94,54 @@ public class SwiftFlutterSocialSharePlugin: NSObject, FlutterPlugin, SharingDele
             systemShare(message: args!["msg"] as! String,result: result)
         }
     }
-    
-    
-    func shareWhatsApp(message:String, imageUrl:String,type:String,result: @escaping FlutterResult)  {
-        // @ For ios
-        // we can't set both if you pass image then text will ignore
-        var whatsURL = ""
-        if(imageUrl==""){
-            whatsURL = "whatsapp://send?text=\(message)"
-        }else{
-            whatsURL = "whatsapp://app"
-        }
-        
-        var characterSet = CharacterSet.urlQueryAllowed
-        characterSet.insert(charactersIn: "?&")
-        let whatsAppURL  = NSURL(string: whatsURL.addingPercentEncoding(withAllowedCharacters: characterSet)!)
-        if UIApplication.shared.canOpenURL(whatsAppURL! as URL)
-        {
-            if(imageUrl==""){
-                //mean user did not pass image url  so just got with text message
-                result("Sucess");
-                UIApplication.shared.openURL(whatsAppURL! as URL)
-                
+
+func shareWhatsApp(message: String, imageUrl: String, type: String, result: @escaping FlutterResult) {
+if imageUrl.isEmpty {
+                                                                                                          // Send message only
+        let whatsAppURL = "whatsapp://send?text=\(message)"
+        if let url = URL(string: whatsAppURL.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!) {
+            if UIApplication.shared.canOpenURL(url) {
+                UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                result("Success")
+            } else {
+                result(FlutterError(code: "WhatsApp not installed", message: "WhatsApp is not installed on the device.", details: nil))
             }
-            else{
-                //this is whats app work around so will open system share and exclude other share types
-                let viewController = UIApplication.shared.delegate?.window??.rootViewController
-                let urlData:Data
-                let filePath:URL
-                if(type=="image"){
-                    let image = UIImage(named: imageUrl)
-                    if(image==nil){
-                        result("File format not supported Please check the file.")
-                        return;
+        }
+    } else {
+         // Ensure that the WhatsApp app is installed on the device
+            if let url = URL(string: "whatsapp://app"), UIApplication.shared.canOpenURL(url) {
+
+                // Create the file URL for the image
+                let fileURL = URL(fileURLWithPath: imageUrl)
+
+                // Check if the file exists
+                if FileManager.default.fileExists(atPath: fileURL.path) {
+
+                    // Create a UIActivityViewController for the file
+                    let activityVC = UIActivityViewController(activityItems: [fileURL], applicationActivities: nil)
+
+                    // Exclude all other sharing options
+                    activityVC.excludedActivityTypes = [
+                        .airDrop, .message, .mail, .postToTwitter, .postToFacebook, .print, .addToReadingList
+                    ]
+
+                    // Present the UIActivityViewController
+                    if let viewController = UIApplication.shared.delegate?.window??.rootViewController {
+                        viewController.present(activityVC, animated: true) {
+                            // Check if WhatsApp was selected after the user finishes the share sheet
+                            result("Success")
+                        }
                     }
-                    //urlData=UIImageJPEGRepresentation(image!, 1.0)!
-                    urlData = image!.jpegData(compressionQuality: 1.0)!
-                    filePath=URL(fileURLWithPath:NSHomeDirectory()).appendingPathComponent("Documents/whatsAppTmp.wai")
-                }else{
-                    filePath=URL(fileURLWithPath:NSTemporaryDirectory()).appendingPathComponent("video.m4v")
-                    urlData = NSData(contentsOf: URL(fileURLWithPath: imageUrl))! as Data
+                } else {
+                    result(FlutterError(code: "FileNotFound", message: "Image file not found", details: nil))
                 }
-                
-                let tempFile = filePath
-                do{
-                    try urlData.write(to: tempFile, options: .atomic)
-                    // image to be share
-                    let imageToShare = [tempFile]
-                    
-                    let activityVC = UIActivityViewController(activityItems: imageToShare, applicationActivities: nil)
-                    // we want to exlude most of the things so developer can see whatsapp only on system share sheet
-                    activityVC.excludedActivityTypes = [UIActivity.ActivityType.airDrop,UIActivity.ActivityType.message, UIActivity.ActivityType.mail,UIActivity.ActivityType.postToTwitter,UIActivity.ActivityType.postToWeibo,UIActivity.ActivityType.print,UIActivity.ActivityType.openInIBooks,UIActivity.ActivityType.postToFlickr,UIActivity.ActivityType.postToFacebook,UIActivity.ActivityType.addToReadingList,UIActivity.ActivityType.copyToPasteboard,UIActivity.ActivityType.postToFacebook]
-                    
-                    viewController!.present(activityVC, animated: true, completion: nil)
-                    result("Sucess");
-                    
-                }catch{
-                    print(error)
-                }
+
+            } else {
+                result(FlutterError(code: "WhatsAppNotInstalled", message: "WhatsApp is not installed on this device", details: nil))
             }
-            
-        }
-        else
-        {
-            result(FlutterError(code: "Not found", message: "WhatsApp is not found", details: "WhatsApp not intalled or Check url scheme."));
-        }
     }
-    
+}
+
     
     // Send whatsapp personal message
     // @ message
@@ -254,30 +235,39 @@ public class SwiftFlutterSocialSharePlugin: NSObject, FlutterPlugin, SharingDele
     // share twitter params
     // @ message
     // @ url
-    func shareTwitter(message:String,url:String, result: @escaping FlutterResult)  {
-        let urlstring = url
-        let twitterUrl =  "twitter://post?message=\(message)"
-        
-        let urlTextEscaped = urlstring.addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed)
-        let url = URL(string: urlTextEscaped ?? "")
-        
-        let urlWithLink = twitterUrl + url!.absoluteString
-        
-        let escapedShareString = urlWithLink.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed)!
-        // cast to an url
-        let urlschme = URL(string: escapedShareString)
-        // open in safari
-        do {
-            if UIApplication.shared.canOpenURL(urlschme! as URL){
-                UIApplication.shared.openURL(urlschme!)
-                result("Sucess")
-            }else{
-                result(FlutterError(code: "Not found", message: "Twitter is not found", details: "Twitter not intalled or Check url scheme."));
-                
-            }
-        }
-        
+
+func shareTwitter(message: String, url: String?, result: @escaping FlutterResult) {
+    // Ensure the message is safely URL-encoded
+    let messageEscaped = message.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+
+    // Default URL if none is provided
+    var twitterUrl = "twitter://post?message=\(messageEscaped)"
+
+    // If a URL is provided, safely encode it and append to the Twitter URL
+    if let urlString = url, !urlString.isEmpty {
+        let urlEscaped = urlString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+        twitterUrl += "&url=\(urlEscaped)"
     }
+
+    // Ensure the constructed URL is valid
+    if let url = URL(string: twitterUrl) {
+        // Check if Twitter is installed and can handle the URL
+        if UIApplication.shared.canOpenURL(url) {
+            // Open Twitter with the constructed URL
+            UIApplication.shared.open(url, options: [:]) { success in
+                if success {
+                    result("Success")
+                } else {
+                    result(FlutterError(code: "FailedToOpen", message: "Failed to open Twitter", details: nil))
+                }
+            }
+        } else {
+            result(FlutterError(code: "NotFound", message: "Twitter is not found", details: "Twitter not installed or check URL scheme"))
+        }
+    } else {
+        result(FlutterError(code: "InvalidURL", message: "Failed to construct a valid URL", details: nil))
+    }
+}
     //share via telegram
     //@ text that you want to share.
     func shareToTelegram(message: String,result: @escaping FlutterResult )

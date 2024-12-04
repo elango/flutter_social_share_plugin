@@ -24,7 +24,7 @@ dependencies:
   flutter:
     sdk: flutter
   # add flutter_social_share_plugin
-  flutter_social_share_plugin: ^2.1.2
+  flutter_social_share_plugin: ^2.1.3
 ```
 ## Setup 
 
@@ -86,7 +86,8 @@ Make sure you add SMS in AndroidManifest.xml.
 Add below value in url scheme(Refer to example).
 
 
-```<key>LSApplicationQueriesSchemes</key>
+```
+<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>fbauth2</string>
 		<string>fb</string>
@@ -113,7 +114,8 @@ Add below value in url scheme(Refer to example).
 
 Make sure you add whatsapp in plist.
 
-````<key>LSApplicationQueriesSchemes</key>
+````
+<key>LSApplicationQueriesSchemes</key>
         <array>
             <string>whatsapp</string>
         </array>
@@ -121,14 +123,16 @@ Make sure you add whatsapp in plist.
 
 #### Setup Twiter
 
-````<key>LSApplicationQueriesSchemes</key>
+````
+<key>LSApplicationQueriesSchemes</key>
         <array>
             <string>twitter</string>
         </array>
 ````
 #### Setup SMS
 
-````<key>LSApplicationQueriesSchemes</key>
+````
+<key>LSApplicationQueriesSchemes</key>
         <array>
             <string>sms</string>
         </array>
