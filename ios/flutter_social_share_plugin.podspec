@@ -16,8 +16,8 @@ Flutter Plugin for sharing contents to social media.
   s.public_header_files = 'Classes/**/*.h'
   s.dependency 'Flutter'
   s.dependency 'FBSDKShareKit', '~> 17.1.0'
-  s.dependency 'FBSDKCoreKit', '~> 17.1.0'
-  s.dependency 'FBSDKLoginKit', '~> 17.1.0'
+  s.dependency 'FBSDKCoreKit', '~> 16.3.1'
+  s.dependency 'FBSDKLoginKit', '~> 16.3.1'
   s.ios.deployment_target = '10.0'
 end
 
